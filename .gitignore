@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+*.pyc
+
+.env
+
+data/raw/
+data/filtered_complaints.csv
+
+vector_store/
