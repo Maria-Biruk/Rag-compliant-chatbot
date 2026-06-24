@@ -1,10 +1,5 @@
-from retriever import retrieve
-from transformers import pipeline
+from src.retriever import retrieve
 
-generator = pipeline(
-    "text-generation",
- model="distilgpt2"
-)
 
 def build_prompt(question, chunks):
 
@@ -29,30 +24,32 @@ Question:
 Answer:
 """
 
+
 def ask(question):
 
     results = retrieve(question)
 
     chunks = results["documents"][0]
 
-    prompt = build_prompt(
-        question,
-        chunks
-    )
+    answer = "Based on the retrieved customer complaints:\n\n"
 
-    response = generator(
-        prompt,
-        max_new_tokens=100,
-        do_sample=False
-    )
+    for i, chunk in enumerate(chunks[:3], start=1):
+        answer += f"{i}. {chunk[:250]}...\n\n"
 
-    return response[0]["generated_text"]
+    sources = chunks[:3]
+
+    return answer, sources
+
 
 if __name__ == "__main__":
 
     question = "Why are customers unhappy with credit cards?"
 
-    answer = ask(question)
+    answer, sources = ask(question)
 
     print("\nFINAL ANSWER:\n")
     print(answer)
+
+    print("\nSOURCES:\n")
+    for s in sources:
+        print(s)
